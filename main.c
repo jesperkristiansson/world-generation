@@ -96,4 +96,16 @@ int main(int argc, char **argv)
         }
         printf("\n");
     }
+
+    // clean up
+    for (int r = 0; r < world_height; r++)
+    {
+        for (int c = 0; c < world_width; c++)
+        {
+            struct tile *tile = &world[r][c];
+            tile_teardown(tile);
+        }
+    }
+
+    variation_cleanup(&variations);
 }

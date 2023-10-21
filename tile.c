@@ -78,3 +78,9 @@ void tile_set(struct tile *tile)
         tile_update(neighbor, var->possible_neighbors, var->num_possible);
     }
 }
+
+void tile_teardown(struct tile *tile)
+{
+    free(tile->neighbors);
+    free(tile->possible_variations);
+}

@@ -18,6 +18,6 @@ struct tile
 };
 
 void tile_init(struct tile *tile, int x, int y, struct all_variations *variations, struct tile **neighbors, unsigned int num_neighbors);
-
+void tile_teardown(struct tile *tile);
 void tile_set(struct tile *tile);
 #endif

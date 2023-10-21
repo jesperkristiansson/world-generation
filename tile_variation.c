@@ -22,3 +22,13 @@ struct all_variations variation_get_all()
 
     return all_vars;
 }
+
+void variation_cleanup(struct all_variations *all_vars)
+{
+    for (int i = 0; i < (int)all_vars->num_variations; i++)
+    {
+        struct variation *var = &all_vars->variations[i];
+        free(var->possible_neighbors);
+    }
+    free(all_vars->variations);
+}

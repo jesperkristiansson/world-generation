@@ -19,5 +19,6 @@ struct all_variations
 };
 
 struct all_variations variation_get_all();
+void variation_cleanup(struct all_variations *all_vars);
 
 #endif
