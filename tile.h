@@ -8,7 +8,6 @@
 
 struct tile
 {
-    int x, y;                               // tile coordinates
     unsigned int num_neighbors;             // number of neighboring tiles
     struct tile **neighbors;                // pointers to the neighboring tilesd
     unsigned int num_variations;            // number of possible variations for this tile, varies during generation
@@ -17,7 +16,7 @@ struct tile
     struct variation *set_variation;        // only set if is_set == true
 };
 
-void tile_init(struct tile *tile, int x, int y, struct all_variations *variations, struct tile **neighbors, unsigned int num_neighbors);
+void tile_init(struct tile *tile, struct all_variations *variations, struct tile **neighbors, unsigned int num_neighbors);
 void tile_teardown(struct tile *tile);
 void tile_set(struct tile *tile);
 #endif

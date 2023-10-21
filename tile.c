@@ -5,10 +5,8 @@
 
 #define MIN(a, b) ((a) < (b) ? (a) : (b))
 
-void tile_init(struct tile *tile, int x, int y, struct all_variations *variations, struct tile **neighbors, unsigned int num_neighbors)
+void tile_init(struct tile *tile, struct all_variations *variations, struct tile **neighbors, unsigned int num_neighbors)
 {
-    tile->x = x;
-    tile->y = y;
     tile->num_neighbors = num_neighbors;
     tile->neighbors = neighbors;
     tile->is_set = false;

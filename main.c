@@ -56,7 +56,7 @@ int main(int argc, char **argv)
             {
                 neighbors[idx++] = &world[r][c + 1];
             }
-            tile_init(tile, c, r, &variations, neighbors, idx);
+            tile_init(tile, &variations, neighbors, idx);
         }
     }
 
