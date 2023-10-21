@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "tile.h"
 #include "tile_variation.h"
@@ -8,6 +10,9 @@ int main(int argc, char **argv)
 {
     int world_width = 100;
     int world_height = 25;
+
+    // seed the random number generator
+    srand(time(NULL));
 
     // get variations
     struct all_variations variations = variation_get_all();
