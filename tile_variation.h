@@ -8,6 +8,8 @@
 struct variation
 {
     int value;
+    unsigned int index;
+    unsigned int base_weight;
     struct variation **possible_neighbors;
     unsigned int num_possible;
 };

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <assert.h>
+#include <stdbool.h>
 
 #include "tile.h"
 
@@ -14,9 +15,11 @@ void tile_init(struct tile *tile, struct all_variations *variations, struct tile
 
     tile->num_variations = variations->num_variations;
     tile->possible_variations = malloc(tile->num_variations * sizeof(struct variation *));
+    tile->variation_weights = malloc(variations->num_variations * sizeof(*tile->variation_weights));
     for (unsigned int i = 0; i < variations->num_variations; i++)
     {
         tile->possible_variations[i] = &variations->variations[i];
+        tile->variation_weights[i] = variations->variations[i].base_weight;
     }
 }
 
@@ -46,10 +49,47 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
 
     if (idx < tile->num_variations)
     {
+        // update tile
         free(tile->possible_variations);
         tile->num_variations = idx;
         tile->possible_variations = new_variations;
+
         // update neighbors
+        unsigned int max_allowed_variations = 0;
+        unsigned int max_idx = 0;
+        for (unsigned int i = 0; i < tile->num_variations; ++i)
+        {
+            struct variation *var = tile->possible_variations[i];
+            max_allowed_variations += var->num_possible;
+            if (var->index > max_idx)
+            {
+                max_idx = var->index;
+            }
+        }
+        struct variation **neighbors_allowed = malloc(max_allowed_variations * sizeof(*neighbors_allowed));
+        bool *variation_been_added = calloc(max_idx, sizeof(bool));
+        unsigned int neighbors_num_allowed = 0;
+        for (unsigned int i = 0; i < tile->num_variations; ++i)
+        {
+            struct variation *var = tile->possible_variations[i];
+            for (unsigned int j = 0; j < var->num_possible; ++j)
+            {
+                struct variation *var2 = var->possible_neighbors[j];
+                if (!variation_been_added[var2->index])
+                {
+                    variation_been_added[var2->index] = true;
+                    neighbors_allowed[neighbors_num_allowed++] = var2;
+                }
+            }
+        }
+
+        for (unsigned int i = 0; i < tile->num_neighbors; i++)
+        {
+            tile_update(tile->neighbors[i], neighbors_allowed, neighbors_num_allowed);
+        }
+
+        free(neighbors_allowed);
+        free(variation_been_added);
     }
     else
     {
@@ -62,9 +102,30 @@ void tile_set(struct tile *tile)
     assert(!tile->is_set);
     assert(tile->num_variations > 0);
 
-    // set variation for tile
-    int rand_i = rand() % tile->num_variations;
-    struct variation *var = tile->possible_variations[rand_i];
+    struct variation *var;
+
+    unsigned int total_weight = 0;
+    for (unsigned int i = 0; i < tile->num_variations; ++i)
+    {
+        var = tile->possible_variations[i];
+        unsigned int var_weight = tile->variation_weights[var->index];
+        total_weight += var_weight;
+    }
+
+    int rand_weight = rand() % total_weight;
+    unsigned int var_index = 0;
+    while (1)
+    {
+        if (rand_weight <= 0)
+        {
+            break;
+        }
+        var = tile->possible_variations[var_index];
+        unsigned int var_weight = tile->variation_weights[var->index];
+        rand_weight -= var_weight;
+        ++var_index;
+    }
+
     tile->set_variation = var;
     tile->is_set = true;
     tile->num_variations = 0;

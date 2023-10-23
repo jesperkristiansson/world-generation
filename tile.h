@@ -12,6 +12,7 @@ struct tile
     struct tile **neighbors;                // pointers to the neighboring tilesd
     unsigned int num_variations;            // number of possible variations for this tile, varies during generation
     struct variation **possible_variations; // all variations that the tile can be assigned, varies during generation
+    unsigned int *variation_weights;        // each variation has a weight, used when generating variations
     bool is_set;                            // whether the tile has been assigned a variation or not
     struct variation *set_variation;        // only set if is_set == true
 };

@@ -13,6 +13,8 @@ struct all_variations variation_get_all()
     {
         struct variation *var = &all_vars.variations[i];
         var->value = i;
+        var->index = (unsigned int)i;
+        var->base_weight = 1;
         var->num_possible = 3;
         var->possible_neighbors = (struct variation **)malloc(var->num_possible * sizeof(struct variation *));
         var->possible_neighbors[0] = &all_vars.variations[(i - 1 + num_variations) % num_variations];
