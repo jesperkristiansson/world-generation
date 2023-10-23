@@ -131,6 +131,9 @@ void tile_set(struct tile *tile)
     {
         struct tile *neighbor = tile->neighbors[i];
         tile_update(neighbor, var->possible_neighbors, var->num_possible);
+
+        // update weights
+        neighbor->variation_weights[var->index] += 5;
     }
 }
 
