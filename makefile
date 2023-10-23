@@ -6,3 +6,6 @@ SRCS = $(wildcard *.c)
 
 main : $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) -o $@ $(LFLAGS)
+
+profile : $(SRCS)
+	$(CC) $(CFLAGS) -pg $(SRCS) -o $@ $(LFLAGS)
