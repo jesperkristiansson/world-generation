@@ -14,6 +14,7 @@ void tile_init(struct tile *tile, struct all_variations *variations, struct tile
     tile->set_variation = NULL;
 
     tile->num_variations = variations->num_variations;
+    tile->total_num_variations = variations->num_variations;
     tile->possible_variations = malloc(tile->num_variations * sizeof(struct variation *));
     tile->variation_weights = malloc(variations->num_variations * sizeof(*tile->variation_weights));
     for (unsigned int i = 0; i < variations->num_variations; i++)
@@ -56,18 +57,13 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
 
         // update neighbors
         unsigned int max_allowed_variations = 0;
-        unsigned int max_idx = 0;
         for (unsigned int i = 0; i < tile->num_variations; ++i)
         {
             struct variation *var = tile->possible_variations[i];
             max_allowed_variations += var->num_possible;
-            if (var->index > max_idx)
-            {
-                max_idx = var->index;
-            }
         }
         struct variation **neighbors_allowed = malloc(max_allowed_variations * sizeof(*neighbors_allowed));
-        bool *variation_been_added = calloc(max_idx, sizeof(bool));
+        bool *variation_been_added = calloc(tile->total_num_variations, sizeof(bool));
         unsigned int neighbors_num_allowed = 0;
         for (unsigned int i = 0; i < tile->num_variations; ++i)
         {
@@ -142,4 +138,5 @@ void tile_teardown(struct tile *tile)
 {
     free(tile->neighbors);
     free(tile->possible_variations);
+    free(tile->variation_weights);
 }
