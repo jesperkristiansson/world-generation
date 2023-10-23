@@ -1,7 +1,7 @@
 
 CC = gcc
-CFLAGS = -Wall -Wextra -g -O0
-LFLAGS = 
+CFLAGS = -Wall -Wextra -g -O0 -ljansson
+LFLAGS = -ljansson
 SRCS = $(wildcard *.c)
 
 main : $(SRCS)

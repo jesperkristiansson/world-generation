@@ -40,7 +40,7 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
         for (unsigned int j = 0; j < tile->num_variations; j++)
         {
             struct variation *var2 = tile->possible_variations[j];
-            if (var->value == var2->value)
+            if (var->index == var2->index)
             {
                 new_variations[idx++] = var;
                 break;

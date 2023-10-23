@@ -11,7 +11,7 @@ struct variation_neighbor
 
 struct variation
 {
-    int value;
+    char symbol;
     unsigned int index;
     unsigned int base_weight;
     struct variation_neighbor *possible_neighbors;
@@ -24,7 +24,8 @@ struct all_variations
     unsigned int num_variations;
 };
 
-struct all_variations variation_get_all();
+struct all_variations variation_get_default();
+struct all_variations variation_read_config(const char *config_file);
 void variation_cleanup(struct all_variations *all_vars);
 
 #endif

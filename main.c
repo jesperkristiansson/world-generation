@@ -18,16 +18,16 @@ int main(int argc, char **argv)
     }
 
     // get variations
-    struct all_variations variations = variation_get_all();
+    struct all_variations variations = variation_read_config("config.json");
 
     printf("all variations: \n");
     for (unsigned int i = 0; i < variations.num_variations; i++)
     {
         struct variation *var = &variations.variations[i];
-        printf("%d ->", var->value);
+        printf("%c ->", var->symbol);
         for (unsigned int j = 0; j < var->num_possible; j++)
         {
-            printf(" %d", var->possible_neighbors[j].neighbor->value);
+            printf(" %c(%u)", var->possible_neighbors[j].neighbor->symbol, var->possible_neighbors[j].weight);
         }
         printf("\n");
     }
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
         {
             struct tile *tile = world_get_tile(&world, r, c);
             // printf("%d", tile->num_variations);
-            printf("%d", tile->set_variation->value);
+            printf("%c", tile->set_variation->symbol);
         }
         printf("\n");
     }
