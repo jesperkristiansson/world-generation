@@ -2,11 +2,16 @@
 #include "world.h"
 
 #include <limits.h>
+#include <stdlib.h>
+#include <time.h>
 
 #define WORLD_TILE(world, x, y) (world)->tiles[(x) * (world)->width + (y)]
 
 void world_init(struct world *world, struct all_variations *variations, unsigned int height, unsigned int width)
 {
+    // seed the random number generator, add the seed as attribute to world instead?
+    srand(time(NULL));
+
     world->height = height;
     world->width = width;
 
@@ -56,30 +61,35 @@ void world_destroy(struct world *world)
 
 void world_generate(struct world *world)
 {
-    while (1)
+    while (world_generate_step(world))
+    { /* do nothing */
+    }
+}
+
+bool world_generate_step(struct world *world)
+{
+    struct tile *candidate = NULL;
+    unsigned int lowest_num_variations = UINT_MAX;
+    for (unsigned int r = 0; r < world->height; r++) // use a proper data structure instead, like a binary heap
     {
-        struct tile *candidate = NULL;
-        unsigned int lowest_num_variations = UINT_MAX;
-        for (unsigned int r = 0; r < world->height; r++) // use a proper data structure instead, like a binary heap
+        for (unsigned int c = 0; c < world->width; c++)
         {
-            for (unsigned int c = 0; c < world->width; c++)
+            struct tile *tile = &WORLD_TILE(world, r, c);
+            if (!tile->is_set && tile->num_variations < lowest_num_variations)
             {
-                struct tile *tile = &WORLD_TILE(world, r, c);
-                if (!tile->is_set && tile->num_variations < lowest_num_variations)
-                {
-                    lowest_num_variations = tile->num_variations;
-                    candidate = tile;
-                }
+                lowest_num_variations = tile->num_variations;
+                candidate = tile;
             }
         }
-        if (candidate == NULL)
-        {
-            break;
-        }
-
-        // update generation
-        tile_set(candidate);
     }
+    if (candidate == NULL)
+    {
+        return false;
+    }
+
+    // update generation
+    tile_set(candidate);
+    return true;
 }
 
 struct tile *world_get_tile(struct world *world, unsigned int x, unsigned int y)

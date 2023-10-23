@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "world.h"
 #include "tile.h"
@@ -17,9 +16,6 @@ int main(int argc, char **argv)
         world_width = atoi(argv[1]);
         world_height = atoi(argv[2]);
     }
-
-    // seed the random number generator
-    srand(time(NULL));
 
     // get variations
     struct all_variations variations = variation_get_all();
@@ -40,9 +36,15 @@ int main(int argc, char **argv)
     // create world
     struct world world;
     world_init(&world, &variations, world_height, world_width);
-
-    // generation loop
     world_generate(&world);
+
+    // for (unsigned int i = 0; i < 10; ++i)
+    // {
+    //     if (!world_generate_step(&world))
+    //     {
+    //         break;
+    //     }
+    // }
 
     printf("world:\n");
     for (int r = 0; r < world_height; r++)
@@ -50,6 +52,7 @@ int main(int argc, char **argv)
         for (int c = 0; c < world_width; c++)
         {
             struct tile *tile = world_get_tile(&world, r, c);
+            // printf("%d", tile->num_variations);
             printf("%d", tile->set_variation->value);
         }
         printf("\n");
