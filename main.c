@@ -20,14 +20,15 @@ int main(int argc, char **argv)
     // get variations
     struct all_variations variations = variation_read_config("config.json");
 
-    printf("all variations: \n");
+    printf("all variations (Tile and weights): \n");
     for (unsigned int i = 0; i < variations.num_variations; i++)
     {
         struct variation *var = &variations.variations[i];
-        printf("%c(%u) ->", var->symbol, var->base_weight);
+        printf("\e[%sm%c\e[0m(%u) ->", var->color_code, var->symbol, var->base_weight);
         for (unsigned int j = 0; j < var->num_possible; j++)
         {
-            printf(" %c(%u)", var->possible_neighbors[j].neighbor->symbol, var->possible_neighbors[j].weight);
+            struct variation_neighbor *neighbor = &var->possible_neighbors[j];
+            printf(" \e[%sm%c\e[0m(%u)", neighbor->neighbor->color_code, neighbor->neighbor->symbol, var->possible_neighbors[j].weight);
         }
         printf("\n");
     }
