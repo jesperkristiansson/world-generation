@@ -14,6 +14,7 @@ struct variation
     char symbol;
     unsigned int index;
     unsigned int base_weight;
+    char *color_code;
     struct variation_neighbor *possible_neighbors;
     unsigned int num_possible;
 };

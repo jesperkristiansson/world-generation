@@ -24,7 +24,7 @@ int main(int argc, char **argv)
     for (unsigned int i = 0; i < variations.num_variations; i++)
     {
         struct variation *var = &variations.variations[i];
-        printf("%c ->", var->symbol);
+        printf("%c(%u) ->", var->symbol, var->base_weight);
         for (unsigned int j = 0; j < var->num_possible; j++)
         {
             printf(" %c(%u)", var->possible_neighbors[j].neighbor->symbol, var->possible_neighbors[j].weight);
@@ -53,10 +53,12 @@ int main(int argc, char **argv)
         {
             struct tile *tile = world_get_tile(&world, r, c);
             // printf("%d", tile->num_variations);
-            printf("%c", tile->set_variation->symbol);
+            printf("\e[%sm%c", tile->set_variation->color_code, tile->set_variation->symbol);
         }
         printf("\n");
     }
+    // reset colors
+    printf("\e[0m");
 
     // clean up
     world_destroy(&world);

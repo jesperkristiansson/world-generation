@@ -24,6 +24,11 @@ struct all_variations variation_get_default()
         var->possible_neighbors[0] = (struct variation_neighbor){.neighbor = &all_vars.variations[(i - 1 + num_variations) % num_variations], .weight = 0};
         var->possible_neighbors[1] = (struct variation_neighbor){.neighbor = &all_vars.variations[i], .weight = 4};
         var->possible_neighbors[2] = (struct variation_neighbor){.neighbor = &all_vars.variations[(i + 1) % num_variations], .weight = 0};
+
+        char *color = calloc(3, sizeof(char));
+        color[0] = '3';
+        color[1] = '1' + i;
+        var->color_code = color;
     }
 
     return all_vars;
@@ -64,9 +69,14 @@ struct all_variations variation_read_config(const char *config_file)
         unsigned int id = json_integer_value(id_json);
         unsigned int base_weight = json_integer_value(base_weight_json);
 
+        const size_t color_len = json_string_length(color_json);
+        char *color = calloc(color_len + 1, sizeof(char));
+        strncpy(color, json_string_value(color_json), color_len);
+
         all_vars.variations[index].index = id;
         all_vars.variations[index].symbol = symbol;
         all_vars.variations[index].base_weight = base_weight;
+        all_vars.variations[index].color_code = color;
     }
 
     json_t *json_relations = json_object_get(json, "relations");
@@ -128,6 +138,7 @@ void variation_cleanup(struct all_variations *all_vars)
     {
         struct variation *var = &all_vars->variations[i];
         free(var->possible_neighbors);
+        free(var->color_code);
     }
     free(all_vars->variations);
 }
