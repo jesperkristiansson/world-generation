@@ -1,16 +1,20 @@
 #ifndef TILE_VARIATION_H
 #define TILE_VARIATION_H
 
-// ideally, would read possible variations from a config file
-
 #include <stdlib.h>
+
+struct variation_neighbor
+{
+    struct variation *neighbor;
+    unsigned int weight;
+};
 
 struct variation
 {
     int value;
     unsigned int index;
     unsigned int base_weight;
-    struct variation **possible_neighbors;
+    struct variation_neighbor *possible_neighbors;
     unsigned int num_possible;
 };
 

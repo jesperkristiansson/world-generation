@@ -70,7 +70,7 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
             struct variation *var = tile->possible_variations[i];
             for (unsigned int j = 0; j < var->num_possible; ++j)
             {
-                struct variation *var2 = var->possible_neighbors[j];
+                struct variation *var2 = var->possible_neighbors[j].neighbor;
                 if (!variation_been_added[var2->index])
                 {
                     variation_been_added[var2->index] = true;
@@ -127,14 +127,23 @@ void tile_set(struct tile *tile)
     tile->num_variations = 0;
 
     // update neighbors
+    struct variation **neighbors_allowed = malloc(var->num_possible * sizeof(*neighbors_allowed));
+    for (unsigned int i = 0; i < var->num_possible; i++)
+    {
+        neighbors_allowed[i] = var->possible_neighbors[i].neighbor;
+    }
     for (unsigned int i = 0; i < tile->num_neighbors; i++)
     {
         struct tile *neighbor = tile->neighbors[i];
-        tile_update(neighbor, var->possible_neighbors, var->num_possible);
+        tile_update(neighbor, neighbors_allowed, var->num_possible);
 
         // update weights
-        neighbor->variation_weights[var->index] += 5;
+        for (unsigned int i = 0; i < var->num_possible; i++)
+        {
+            neighbor->variation_weights[var->possible_neighbors[i].neighbor->index] += var->possible_neighbors[i].weight;
+        }
     }
+    free(neighbors_allowed);
 }
 
 void tile_teardown(struct tile *tile)

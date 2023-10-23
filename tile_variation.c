@@ -16,10 +16,10 @@ struct all_variations variation_get_all()
         var->index = (unsigned int)i;
         var->base_weight = 1;
         var->num_possible = 3;
-        var->possible_neighbors = (struct variation **)malloc(var->num_possible * sizeof(struct variation *));
-        var->possible_neighbors[0] = &all_vars.variations[(i - 1 + num_variations) % num_variations];
-        var->possible_neighbors[1] = &all_vars.variations[i];
-        var->possible_neighbors[2] = &all_vars.variations[(i + 1) % num_variations];
+        var->possible_neighbors = malloc(var->num_possible * sizeof(struct variation_neighbor));
+        var->possible_neighbors[0] = (struct variation_neighbor){.neighbor = &all_vars.variations[(i - 1 + num_variations) % num_variations], .weight = 0};
+        var->possible_neighbors[1] = (struct variation_neighbor){.neighbor = &all_vars.variations[i], .weight = 4};
+        var->possible_neighbors[2] = (struct variation_neighbor){.neighbor = &all_vars.variations[(i + 1) % num_variations], .weight = 0};
     }
 
     return all_vars;

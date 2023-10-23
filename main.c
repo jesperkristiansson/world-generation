@@ -27,7 +27,7 @@ int main(int argc, char **argv)
         printf("%d ->", var->value);
         for (unsigned int j = 0; j < var->num_possible; j++)
         {
-            printf(" %d", var->possible_neighbors[j]->value);
+            printf(" %d", var->possible_neighbors[j].neighbor->value);
         }
         printf("\n");
     }
