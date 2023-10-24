@@ -2,7 +2,8 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -g -O3 -ljansson
 LFLAGS = -ljansson
-SRCS = $(wildcard *.c)
+SRC_DIR = ./src
+SRCS = $(wildcard $(SRC_DIR)/*.c)
 
 world-gen : $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) -o $@ $(LFLAGS)
