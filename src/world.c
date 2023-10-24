@@ -9,10 +9,10 @@
 
 #define WORLD_TILE(world, x, y) (world)->tiles[(y) * (world)->width + (x)]
 
-void world_init(struct world *world, struct all_variations *variations, unsigned int height, unsigned int width)
+void world_init(struct world *world, unsigned int seed, struct all_variations *variations, unsigned int height, unsigned int width)
 {
     // seed the random number generator, add the seed as attribute to world instead?
-    srand(time(NULL));
+    srand(seed);
 
     world->height = height;
     world->width = width;

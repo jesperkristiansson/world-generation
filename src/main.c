@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "world.h"
 #include "tile.h"
@@ -18,6 +19,19 @@ int main(int argc, char **argv)
 
     int next_option_i = 1;
     char *option = NULL;
+
+    unsigned int seed = time(NULL);
+
+    if (argc > next_option_i)
+    {
+        option = argv[next_option_i];
+        if (strcmp(option, "-s") == 0)
+        {
+            seed = atoi(argv[next_option_i + 1]);
+            next_option_i += 2;
+        }
+    }
+
     if (argc > next_option_i)
     {
         option = argv[next_option_i];
@@ -60,7 +74,7 @@ int main(int argc, char **argv)
 
     // create world
     struct world world;
-    world_init(&world, &variations, world_height, world_width);
+    world_init(&world, seed, &variations, world_height, world_width);
 
     // hide cursor
     printf("\e[?25l");
