@@ -24,7 +24,7 @@ void tile_init(struct tile *tile, struct all_variations *variations, struct tile
     }
 }
 
-static void tile_update(struct tile *tile, struct variation **allowed_variations, unsigned int num_allowed_variations)
+static void tile_update(struct tile *tile, struct variation **allowed_variations, unsigned int num_allowed_variations, struct tile_bucket *buckets)
 {
     if (tile->is_set)
     {
@@ -55,6 +55,8 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
         tile->num_variations = idx;
         tile->possible_variations = new_variations;
 
+        tile_bucket_add(&buckets[tile->num_variations - 1], tile);
+
         // update neighbors
         unsigned int max_allowed_variations = 0;
         for (unsigned int i = 0; i < tile->num_variations; ++i)
@@ -81,7 +83,7 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
 
         for (unsigned int i = 0; i < tile->num_neighbors; i++)
         {
-            tile_update(tile->neighbors[i], neighbors_allowed, neighbors_num_allowed);
+            tile_update(tile->neighbors[i], neighbors_allowed, neighbors_num_allowed, buckets);
         }
 
         free(neighbors_allowed);
@@ -93,7 +95,7 @@ static void tile_update(struct tile *tile, struct variation **allowed_variations
     }
 }
 
-void tile_set(struct tile *tile)
+void tile_set(struct tile *tile, struct tile_bucket *buckets)
 {
     assert(!tile->is_set);
     assert(tile->num_variations > 0);
@@ -135,7 +137,7 @@ void tile_set(struct tile *tile)
     for (unsigned int i = 0; i < tile->num_neighbors; i++)
     {
         struct tile *neighbor = tile->neighbors[i];
-        tile_update(neighbor, neighbors_allowed, var->num_possible);
+        tile_update(neighbor, neighbors_allowed, var->num_possible, buckets);
 
         // update weights
         for (unsigned int i = 0; i < var->num_possible; i++)

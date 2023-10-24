@@ -4,12 +4,15 @@
 #include <stdbool.h>
 
 #include "tile.h"
+#include "tile_bucket.h"
 #include "tile_variation.h"
 
 struct world
 {
-    unsigned int height, width;
     struct tile *tiles;
+    struct tile_bucket *buckets;
+    unsigned int height, width;
+    unsigned int num_buckets;
 };
 
 void world_init(struct world *world, struct all_variations *variations, unsigned int height, unsigned int width);

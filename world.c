@@ -4,6 +4,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <time.h>
+#include <stdio.h>
 
 #define WORLD_TILE(world, x, y) (world)->tiles[(x) * (world)->width + (y)]
 
@@ -17,6 +18,15 @@ void world_init(struct world *world, struct all_variations *variations, unsigned
 
     unsigned int num_tiles = height * width;
     world->tiles = malloc(num_tiles * sizeof(struct tile));
+
+    const unsigned int bucket_starting_cap = (num_tiles + 99) / 100;
+    world->num_buckets = variations->num_variations;
+    world->buckets = malloc(variations->num_variations * sizeof(struct tile_bucket));
+    for (unsigned int i = 0; i < variations->num_variations; i++)
+    {
+        tile_bucket_init(&world->buckets[i], bucket_starting_cap);
+    }
+
     for (unsigned int r = 0; r < height; r++)
     {
         for (unsigned int c = 0; c < width; c++)
@@ -42,6 +52,7 @@ void world_init(struct world *world, struct all_variations *variations, unsigned
                 neighbors[idx++] = &WORLD_TILE(world, r, c + 1);
             }
             tile_init(tile, variations, neighbors, idx);
+            tile_bucket_add(&world->buckets[tile->num_variations - 1], tile);
         }
     }
 }
@@ -69,17 +80,17 @@ void world_generate(struct world *world)
 bool world_generate_step(struct world *world)
 {
     struct tile *candidate = NULL;
-    unsigned int lowest_num_variations = UINT_MAX;
-    for (unsigned int r = 0; r < world->height; r++) // use a proper data structure instead, like a binary heap
+    for (unsigned int i = 0; i < world->num_buckets; i++)
     {
-        for (unsigned int c = 0; c < world->width; c++)
+        struct tile_bucket *bucket = &world->buckets[i];
+        while (bucket->size > 0)
         {
-            struct tile *tile = &WORLD_TILE(world, r, c);
-            if (!tile->is_set && tile->num_variations < lowest_num_variations)
+            candidate = tile_bucket_pop(bucket);
+            if (!candidate->is_set)
             {
-                lowest_num_variations = tile->num_variations;
-                candidate = tile;
+                break;
             }
+            candidate = NULL;
         }
     }
     if (candidate == NULL)
@@ -88,7 +99,7 @@ bool world_generate_step(struct world *world)
     }
 
     // update generation
-    tile_set(candidate);
+    tile_set(candidate, world->buckets);
     return true;
 }
 
