@@ -20,5 +20,6 @@ void world_destroy(struct world *world);
 void world_generate(struct world *world);
 bool world_generate_step(struct world *world);
 struct tile *world_get_tile(struct world *world, unsigned int x, unsigned int y);
+void world_print(struct world *world);
 
 #endif

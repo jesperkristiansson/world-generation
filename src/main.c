@@ -51,18 +51,7 @@ int main(int argc, char **argv)
     // }
 
     printf("world:\n");
-    for (int r = 0; r < world_height; r++)
-    {
-        for (int c = 0; c < world_width; c++)
-        {
-            struct tile *tile = world_get_tile(&world, r, c);
-            // printf("%d", tile->num_variations);
-            printf("\e[%sm%c", tile->set_variation->color_code, tile->set_variation->symbol);
-        }
-        printf("\n");
-    }
-    // reset colors
-    printf("\e[0m");
+    world_print(&world);
 
     // clean up
     world_destroy(&world);

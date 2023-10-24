@@ -6,7 +6,7 @@
 #include <time.h>
 #include <stdio.h>
 
-#define WORLD_TILE(world, x, y) (world)->tiles[(x) * (world)->width + (y)]
+#define WORLD_TILE(world, x, y) (world)->tiles[(y) * (world)->width + (x)]
 
 void world_init(struct world *world, struct all_variations *variations, unsigned int height, unsigned int width)
 {
@@ -27,29 +27,29 @@ void world_init(struct world *world, struct all_variations *variations, unsigned
         tile_bucket_init(&world->buckets[i], bucket_starting_cap);
     }
 
-    for (unsigned int r = 0; r < height; r++)
+    for (unsigned int y = 0; y < height; y++)
     {
-        for (unsigned int c = 0; c < width; c++)
+        for (unsigned int x = 0; x < width; x++)
         {
-            struct tile *tile = &WORLD_TILE(world, r, c);
+            struct tile *tile = &WORLD_TILE(world, x, y);
             const unsigned int max_neighbors = 4;
             struct tile **neighbors = malloc(max_neighbors * sizeof(struct tile *)); // should probably be alloced for all tiles at once
             unsigned int idx = 0;
-            if (r != 0)
+            if (y != 0)
             {
-                neighbors[idx++] = &WORLD_TILE(world, r - 1, c);
+                neighbors[idx++] = &WORLD_TILE(world, x, y - 1);
             }
-            if (r != height - 1)
+            if (y != height - 1)
             {
-                neighbors[idx++] = &WORLD_TILE(world, r + 1, c);
+                neighbors[idx++] = &WORLD_TILE(world, x, y + 1);
             }
-            if (c != 0)
+            if (x != 0)
             {
-                neighbors[idx++] = &WORLD_TILE(world, r, c - 1);
+                neighbors[idx++] = &WORLD_TILE(world, x - 1, y);
             }
-            if (c != width - 1)
+            if (x != width - 1)
             {
-                neighbors[idx++] = &WORLD_TILE(world, r, c + 1);
+                neighbors[idx++] = &WORLD_TILE(world, x + 1, y);
             }
             tile_init(tile, variations, neighbors, idx);
             tile_bucket_add(&world->buckets[tile->num_variations - 1], tile);
@@ -59,11 +59,11 @@ void world_init(struct world *world, struct all_variations *variations, unsigned
 
 void world_destroy(struct world *world)
 {
-    for (unsigned int r = 0; r < world->height; r++)
+    for (unsigned int y = 0; y < world->height; y++)
     {
-        for (unsigned int c = 0; c < world->width; c++)
+        for (unsigned int x = 0; x < world->width; x++)
         {
-            struct tile *tile = &WORLD_TILE(world, r, c);
+            struct tile *tile = &WORLD_TILE(world, x, y);
             tile_teardown(tile);
         }
     }
@@ -106,4 +106,26 @@ bool world_generate_step(struct world *world)
 struct tile *world_get_tile(struct world *world, unsigned int x, unsigned int y)
 {
     return &WORLD_TILE(world, x, y);
+}
+
+void world_print(struct world *world)
+{
+    for (unsigned int y = 0; y < world->height; y++)
+    {
+        for (unsigned int x = 0; x < world->width; x++)
+        {
+            struct tile *tile = &WORLD_TILE(world, x, y);
+            if (tile->is_set)
+            {
+                printf("\e[%sm%c", tile->set_variation->color_code, tile->set_variation->symbol);
+            }
+            else
+            {
+                printf("\e[0m%d", tile->num_variations);
+            }
+        }
+        printf("\n");
+    }
+    // reset colors
+    printf("\e[0m");
 }
