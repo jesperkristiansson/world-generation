@@ -68,6 +68,12 @@ void world_destroy(struct world *world)
         }
     }
     free(world->tiles);
+
+    for (unsigned int i = 0; i < world->num_buckets; i++)
+    {
+        tile_bucket_cleanup(&world->buckets[i]);
+    }
+    free(world->buckets);
 }
 
 void world_generate(struct world *world)
