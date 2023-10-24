@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
 #include "world.h"
 #include "tile.h"
@@ -10,14 +12,31 @@ int main(int argc, char **argv)
 {
     int world_width = 100;
     int world_height = 25;
+    bool interactive_mode = false;
 
-    if (argc >= 2)
+    int next_option_i = 1;
+    char *option = NULL;
+    if (argc > next_option_i)
     {
-        world_width = atoi(argv[1]);
+        option = argv[next_option_i];
+        if (strcmp(option, "-i") == 0)
+        {
+            interactive_mode = true;
+            next_option_i++;
+        }
     }
-    if (argc >= 3)
+
+    if (argc > next_option_i)
     {
-        world_height = atoi(argv[2]);
+        option = argv[next_option_i];
+        world_width = atoi(option);
+        next_option_i++;
+    }
+    if (argc > next_option_i)
+    {
+        option = argv[next_option_i];
+        world_height = atoi(option);
+        next_option_i++;
     }
 
     // get variations
@@ -40,18 +59,25 @@ int main(int argc, char **argv)
     // create world
     struct world world;
     world_init(&world, &variations, world_height, world_width);
-    world_generate(&world);
 
-    // for (unsigned int i = 0; i < 10; ++i)
-    // {
-    //     if (!world_generate_step(&world))
-    //     {
-    //         break;
-    //     }
-    // }
-
-    printf("world:\n");
-    world_print(&world);
+    if (interactive_mode)
+    {
+        printf("world generation step by step:\n");
+        bool changed;
+        do
+        {
+            sleep(1);
+            changed = world_generate_step(&world);
+            printf("\n");
+            world_print(&world);
+        } while (changed);
+    }
+    else
+    {
+        world_generate(&world);
+        printf("world:\n");
+        world_print(&world);
+    }
 
     // clean up
     world_destroy(&world);
