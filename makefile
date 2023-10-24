@@ -4,7 +4,7 @@ CFLAGS = -Wall -Wextra -g -O3 -ljansson
 LFLAGS = -ljansson
 SRCS = $(wildcard *.c)
 
-main : $(SRCS)
+world-gen : $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) -o $@ $(LFLAGS)
 
 profile : $(SRCS)

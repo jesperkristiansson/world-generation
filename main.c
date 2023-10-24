@@ -11,9 +11,12 @@ int main(int argc, char **argv)
     int world_width = 100;
     int world_height = 25;
 
-    if (argc >= 3)
+    if (argc >= 2)
     {
         world_width = atoi(argv[1]);
+    }
+    if (argc >= 3)
+    {
         world_height = atoi(argv[2]);
     }
 
