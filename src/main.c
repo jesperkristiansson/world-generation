@@ -65,14 +65,21 @@ int main(int argc, char **argv)
     if (interactive_mode)
     {
         printf("world generation step by step:\n");
-        useconds_t sleep_usec = 200 * 1000;
+
+        // initial world
+        world_print(&world);
+        world_generate_step(&world);
+
+        useconds_t sleep_usec = 20 * 1000;
         bool changed;
         do
         {
+            // move cursor to overwrite last printout
+            printf("\033[%dA", world.height); // move up
+            printf("\033[%dD", world.width);  // move left
+            world_print(&world);
             usleep(sleep_usec);
             changed = world_generate_step(&world);
-            world_print(&world);
-            printf("\n");
         } while (changed);
     }
     else

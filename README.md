@@ -6,4 +6,5 @@ Uses [Jansson](https://jansson.readthedocs.io/en/latest/index.html) for parsing 
 Build with `make` and run with `./world-gen [-i] [width] [height]`. If run with `-i`, each step in the world generation will be printed.
 
 TODO:
-- in interactive mode, the last snapshot of the world should be erased before print next step
+- find a better way to sleep between generation steps
+- improve printing of world to avoid flickering
