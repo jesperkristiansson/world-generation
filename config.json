@@ -15,7 +15,7 @@
         {
             "symbol": "G",
             "id": 2,
-            "base_weight": 10,
+            "base_weight": 5,
             "color": "1;32"
         },
         {
@@ -29,12 +29,12 @@
         {
             "id1": 0,
             "id2": 0,
-            "weight": 3
+            "weight": 15
         },
         {
             "id1": 0,
             "id2": 1,
-            "weight": 0
+            "weight": 3
         },
         {
             "id1": 1,
@@ -54,12 +54,12 @@
         {
             "id1": 2,
             "id2": 3,
-            "weight": 0
+            "weight": 3
         },
         {
             "id1": 3,
             "id2": 3,
-            "weight": 3
+            "weight": 5
         }
     ]
 }
