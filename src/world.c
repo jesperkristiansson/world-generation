@@ -92,6 +92,10 @@ bool world_generate_step(struct world *world)
             }
             candidate = NULL;
         }
+        if (candidate != NULL)
+        {
+            break;
+        }
     }
     if (candidate == NULL)
     {
@@ -106,6 +110,13 @@ bool world_generate_step(struct world *world)
 struct tile *world_get_tile(struct world *world, unsigned int x, unsigned int y)
 {
     return &WORLD_TILE(world, x, y);
+}
+
+void world_get_position(struct world *world, struct tile *tile, unsigned int *x, unsigned int *y)
+{
+    int tile_index = tile - world->tiles;
+    *y = tile_index / world->width;
+    *x = tile_index % world->width;
 }
 
 void world_print(struct world *world)

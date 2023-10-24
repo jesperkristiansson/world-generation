@@ -68,8 +68,8 @@ int main(int argc, char **argv)
         {
             sleep(1);
             changed = world_generate_step(&world);
-            printf("\n");
             world_print(&world);
+            printf("\n");
         } while (changed);
     }
     else
