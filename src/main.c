@@ -1,3 +1,5 @@
+#define _DEFAULT_SOURCE
+
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
@@ -63,10 +65,11 @@ int main(int argc, char **argv)
     if (interactive_mode)
     {
         printf("world generation step by step:\n");
+        useconds_t sleep_usec = 200 * 1000;
         bool changed;
         do
         {
-            sleep(1);
+            usleep(sleep_usec);
             changed = world_generate_step(&world);
             world_print(&world);
             printf("\n");
