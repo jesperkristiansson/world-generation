@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
+#include <string.h>
 
 #define WORLD_TILE(world, x, y) (world)->tiles[(y) * (world)->width + (x)]
 
@@ -127,6 +128,7 @@ void world_get_position(struct world *world, struct tile *tile, unsigned int *x,
 
 void world_print(struct world *world)
 {
+    char *last_color = "0";
     for (unsigned int y = 0; y < world->height; y++)
     {
         for (unsigned int x = 0; x < world->width; x++)
@@ -134,11 +136,23 @@ void world_print(struct world *world)
             struct tile *tile = &WORLD_TILE(world, x, y);
             if (tile->is_set)
             {
-                printf("\e[%sm%c", tile->set_variation->color_code, tile->set_variation->symbol);
+                char *new_color = tile->set_variation->color_code;
+                if (strcmp(new_color, last_color) != 0)
+                {
+                    last_color = new_color;
+                    printf("\e[%sm", new_color);
+                }
+                printf("%c", tile->set_variation->symbol);
             }
             else
             {
-                printf("\e[0m%d", tile->num_variations);
+                char *new_color = "0";
+                if (strcmp(new_color, last_color) != 0)
+                {
+                    last_color = new_color;
+                    printf("\e[0m");
+                }
+                printf("%d", tile->num_variations);
             }
         }
         printf("\n");
