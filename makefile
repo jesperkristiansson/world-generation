@@ -1,7 +1,7 @@
 
 CC = gcc
-CFLAGS = -Wall -Wextra -g -O3 -ljansson
-LFLAGS = -ljansson
+CFLAGS = -Wall -Wextra -g -O3 -flto -ljansson
+LFLAGS = -O3 -flto -ljansson
 SRC_DIR = ./src
 SRCS = $(wildcard $(SRC_DIR)/*.c)
 
