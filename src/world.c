@@ -89,9 +89,9 @@ bool world_generate_step(struct world *world)
     for (unsigned int i = 0; i < world->num_buckets; i++)
     {
         struct tile_bucket *bucket = &world->buckets[i];
-        while (bucket->size > 0)
+        while (tile_bucket_size(bucket) > 0)
         {
-            candidate = tile_bucket_pop(bucket);
+            candidate = tile_bucket_get(bucket);
             if (!candidate->is_set)
             {
                 break;
