@@ -11,6 +11,7 @@ struct world
 {
     struct tile *tiles;
     struct tile_bucket *buckets;
+    char *print_buffer;
     unsigned int height, width;
     unsigned int num_buckets;
 };

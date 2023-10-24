@@ -8,6 +8,9 @@
 
 #define WORLD_TILE(world, x, y) (world)->tiles[(y) * (world)->width + (x)]
 
+#define TILE_OUTPUT_COLOR_SIZE 8    // each tile will be printed as \e[%sm%c, where %s is a color(max 4 chars), and %c is a character
+#define TILE_OUTPUT_NO_COLOR_SIZE 5 // without color, a tile is printed as \e[0m%d, where %d must be 1 digit
+
 void world_init(struct world *world, struct all_variations *variations, unsigned int height, unsigned int width)
 {
     // seed the random number generator, add the seed as attribute to world instead?
@@ -18,6 +21,10 @@ void world_init(struct world *world, struct all_variations *variations, unsigned
 
     unsigned int num_tiles = height * width;
     world->tiles = malloc(num_tiles * sizeof(struct tile));
+
+    // buffer needs one character per tile + 1 newline after each row + terminating null_byte
+    size_t print_buffer_size = num_tiles * TILE_OUTPUT_COLOR_SIZE + height + 1;
+    world->print_buffer = malloc(print_buffer_size * sizeof(char));
 
     const unsigned int bucket_starting_cap = (num_tiles + 99) / 100;
     world->num_buckets = variations->num_variations;
@@ -74,6 +81,7 @@ void world_destroy(struct world *world)
         tile_bucket_cleanup(&world->buckets[i]);
     }
     free(world->buckets);
+    free(world->print_buffer);
 }
 
 void world_generate(struct world *world)
@@ -127,22 +135,41 @@ void world_get_position(struct world *world, struct tile *tile, unsigned int *x,
 
 void world_print(struct world *world)
 {
+    unsigned int print_buffer_index = 0;
     for (unsigned int y = 0; y < world->height; y++)
     {
         for (unsigned int x = 0; x < world->width; x++)
         {
             struct tile *tile = &WORLD_TILE(world, x, y);
+            char *print_location = &world->print_buffer[print_buffer_index];
+// we ignore warnings about format truncation, since that is what we want here
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
             if (tile->is_set)
             {
-                printf("\e[%sm%c", tile->set_variation->color_code, tile->set_variation->symbol);
+                int ret = snprintf(print_location, TILE_OUTPUT_COLOR_SIZE + 1, "\e[%sm%c", tile->set_variation->color_code, tile->set_variation->symbol);
+                if (ret < 0)
+                {
+                    abort();
+                }
+                print_buffer_index += TILE_OUTPUT_COLOR_SIZE;
             }
             else
             {
-                printf("\e[0m%d", tile->num_variations);
+                int ret = snprintf(print_location, TILE_OUTPUT_NO_COLOR_SIZE + 1, "\e[0m%d", tile->num_variations);
+                if (ret < 0)
+                {
+                    abort();
+                }
+                print_buffer_index += TILE_OUTPUT_NO_COLOR_SIZE;
             }
+#pragma GCC diagnostic pop
         }
-        printf("\n");
+        world->print_buffer[print_buffer_index++] = '\n';
     }
+    world->print_buffer[print_buffer_index] = '\0';
+
+    printf("%s", world->print_buffer);
     // reset colors
     printf("\e[0m");
 }
