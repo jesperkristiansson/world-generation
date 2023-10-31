@@ -11,12 +11,12 @@ struct world
 {
     struct tile *tiles;
     struct tile_bucket *buckets;
-    unsigned int *last_val; // keeps track of which tiles have changed, used to optimized which tiles are printed
+    struct tile_bucket changed_list; // keeps track of which tiles have changed, used to optimized which tiles are printed
     unsigned int height, width;
     unsigned int num_buckets;
 };
 
-void world_init(struct world *world, unsigned int  seed, struct all_variations *variations, unsigned int height, unsigned int width);
+void world_init(struct world *world, unsigned int seed, struct all_variations *variations, unsigned int height, unsigned int width);
 void world_destroy(struct world *world);
 void world_generate(struct world *world);
 bool world_generate_step(struct world *world);

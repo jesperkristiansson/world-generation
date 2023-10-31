@@ -29,7 +29,7 @@ void world_init(struct world *world, unsigned int seed, struct all_variations *v
         tile_bucket_init(&world->buckets[i], bucket_starting_cap);
     }
 
-    world->last_val = malloc(num_tiles * sizeof(*world->last_val));
+    tile_bucket_init(&world->changed_list, bucket_starting_cap);
 
     for (unsigned int y = 0; y < height; y++)
     {
@@ -55,10 +55,8 @@ void world_init(struct world *world, unsigned int seed, struct all_variations *v
             {
                 neighbors[idx++] = &WORLD_TILE(world, x + 1, y);
             }
-            tile_init(tile, variations, neighbors, idx);
+            tile_init(tile, x, y, variations, neighbors, idx);
             tile_bucket_add(&world->buckets[tile->num_variations - 1], tile);
-
-            world->last_val[WORLD_TILE_INDEX(world, x, y)] = tile->num_variations;
         }
     }
 }
@@ -80,7 +78,8 @@ void world_destroy(struct world *world)
         tile_bucket_cleanup(&world->buckets[i]);
     }
     free(world->buckets);
-    free(world->last_val);
+
+    tile_bucket_cleanup(&world->changed_list);
 }
 
 void world_generate(struct world *world)
@@ -116,7 +115,7 @@ bool world_generate_step(struct world *world)
     }
 
     // update generation
-    tile_set(candidate, world->buckets);
+    tile_set(candidate, world->buckets, &world->changed_list);
     return true;
 }
 
@@ -136,6 +135,7 @@ void world_print_update(struct world *world)
 {
     // hide cursor
     printf("\e[?25l");
+
     // move cursor to start of world
     printf("\033[%dA", world->height); // move up
     // printf("\033[%dD", world->width);  // move left
@@ -143,62 +143,56 @@ void world_print_update(struct world *world)
     unsigned int cursor_y = 0;
 
     char *last_color = "0";
-    for (unsigned int y = 0; y < world->height; y++)
+    while (tile_bucket_size(&world->changed_list) > 0)
     {
-        for (unsigned int x = 0; x < world->width; x++)
+        struct tile *tile = tile_bucket_get(&world->changed_list);
+        unsigned int x = tile->x;
+        unsigned int y = tile->y;
+
+        int delta_x = (int)x - (int)cursor_x;
+        int delta_y = (int)y - (int)cursor_y;
+
+        // move cursor
+        if (delta_x < 0)
         {
-            struct tile *tile = &WORLD_TILE(world, x, y);
-            unsigned int tile_index = WORLD_TILE_INDEX(world, x, y);
-            if (world->last_val[tile_index] != tile->num_variations)
-            {
-                int delta_x = (int)x - (int)cursor_x;
-                int delta_y = (int)y - (int)cursor_y;
-
-                // move cursor
-                if (delta_x < 0)
-                {
-                    printf("\033[%dD", -delta_x); // move left
-                }
-                else if (delta_x > 0)
-                {
-                    printf("\033[%dC", delta_x); // move right
-                }
-
-                if (delta_y < 0)
-                {
-                    printf("\033[%dA", -delta_y); // move up
-                }
-                else if (delta_y > 0)
-                {
-                    printf("\033[%dB", delta_y); // move down
-                }
-
-                world->last_val[tile_index] = tile->num_variations;
-
-                if (tile->is_set)
-                {
-                    char *new_color = tile->set_variation->color_code;
-                    if (strcmp(new_color, last_color) != 0)
-                    {
-                        last_color = new_color;
-                        printf("\e[%sm", new_color);
-                    }
-                    printf("%c", tile->set_variation->symbol);
-                }
-                else
-                {
-                    char *new_color = "0";
-                    if (strcmp(new_color, last_color) != 0)
-                    {
-                        last_color = new_color;
-                        printf("\e[0m");
-                    }
-                    printf("%d", tile->num_variations);
-                }
-                cursor_x += delta_x + 1;
-                cursor_y += delta_y;
-            }
+            printf("\033[%dD", -delta_x); // move left
         }
+        else if (delta_x > 0)
+        {
+            printf("\033[%dC", delta_x); // move right
+        }
+
+        if (delta_y < 0)
+        {
+            printf("\033[%dA", -delta_y); // move up
+        }
+        else if (delta_y > 0)
+        {
+            printf("\033[%dB", delta_y); // move down
+        }
+
+        if (tile->is_set)
+        {
+            char *new_color = tile->set_variation->color_code;
+            if (strcmp(new_color, last_color) != 0)
+            {
+                last_color = new_color;
+                printf("\e[%sm", new_color);
+            }
+            printf("%c", tile->set_variation->symbol);
+        }
+        else
+        {
+            char *new_color = "0";
+            if (strcmp(new_color, last_color) != 0)
+            {
+                last_color = new_color;
+                printf("\e[0m");
+            }
+            printf("%d", tile->num_variations);
+        }
+        cursor_x += delta_x + 1;
+        cursor_y += delta_y;
     }
     // move cursor to start of line after world printout
     printf("\033[%dD", cursor_x);
@@ -221,8 +215,6 @@ void world_print(struct world *world)
         for (unsigned int x = 0; x < world->width; x++)
         {
             struct tile *tile = &WORLD_TILE(world, x, y);
-            unsigned int tile_index = WORLD_TILE_INDEX(world, x, y);
-            world->last_val[tile_index] = tile->num_variations;
             if (tile->is_set)
             {
                 char *new_color = tile->set_variation->color_code;
@@ -248,4 +240,6 @@ void world_print(struct world *world)
     }
     // reset colors
     printf("\e[0m");
+
+    tile_bucket_clear(&world->changed_list);
 }
