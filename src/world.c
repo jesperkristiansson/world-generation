@@ -166,11 +166,11 @@ void world_print_update(struct world *world)
 
                 if (delta_y < 0)
                 {
-                    printf("\033[%dB", -delta_y); // move down
+                    printf("\033[%dA", -delta_y); // move up
                 }
                 else if (delta_y > 0)
                 {
-                    printf("\033[%dA", delta_y); // move up
+                    printf("\033[%dB", delta_y); // move down
                 }
 
                 world->last_val[tile_index] = tile->num_variations;
@@ -202,8 +202,7 @@ void world_print_update(struct world *world)
     }
     // move cursor to start of line after world printout
     printf("\033[%dD", cursor_x);
-    printf("\033[%dB", (int)world->height - (int)cursor_y + 1);
-    printf("x\n");
+    printf("\033[%dB", (int)world->height - (int)cursor_y);
 
     // reset colors
     printf("\e[0m");
