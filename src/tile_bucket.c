@@ -11,6 +11,10 @@ void tile_bucket_init(struct tile_bucket *bucket, unsigned int cap)
 
 void tile_bucket_add(struct tile_bucket *bucket, struct tile *tile)
 {
+    if (bucket == NULL)
+    {
+        return;
+    }
     if (bucket->write_index == bucket->capacity)
     {
         bucket->capacity *= 2;

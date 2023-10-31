@@ -15,6 +15,7 @@ void tile_bucket_init(struct tile_bucket *bucket, unsigned int cap);
 void tile_bucket_add(struct tile_bucket *bucket, struct tile *tile);
 unsigned int tile_bucket_size(struct tile_bucket *bucket);
 struct tile *tile_bucket_get(struct tile_bucket *bucket);
+void tile_bucket_clear(struct tile_bucket *bucket);
 void tile_bucket_cleanup(struct tile_bucket *bucket);
 
 #endif
