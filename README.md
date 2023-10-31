@@ -7,4 +7,4 @@ Build with `make` and run with `./world-gen [-s SEED] [-i] [width] [height]`. If
 
 TODO:
 - find a better way to sleep between generation steps
-- improve printing of world to avoid flickering
+- in interactive mode, only print a tile when it has changed from last iteration
