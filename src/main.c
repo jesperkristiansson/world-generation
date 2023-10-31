@@ -16,11 +16,11 @@ int main(int argc, char **argv)
     int world_width = 100;
     int world_height = 25;
     bool interactive_mode = false;
+    unsigned int seed = time(NULL);
+    double delay_ms = 10.0;
 
     int next_option_i = 1;
     char *option = NULL;
-
-    unsigned int seed = time(NULL);
 
     if (argc > next_option_i)
     {
@@ -39,6 +39,16 @@ int main(int argc, char **argv)
         {
             interactive_mode = true;
             next_option_i++;
+        }
+    }
+
+    if (argc > next_option_i)
+    {
+        option = argv[next_option_i];
+        if (strcmp(option, "-d") == 0)
+        {
+            delay_ms = atof(argv[next_option_i + 1]);
+            next_option_i += 2;
         }
     }
 
@@ -86,15 +96,14 @@ int main(int argc, char **argv)
         world_print(&world);
         world_generate_step(&world);
 
-        useconds_t sleep_usec = 20 * 1000;
+        useconds_t sleep_usec = (useconds_t)(delay_ms * 1000);
         bool changed;
-        int i = 0;
         do
         {
             world_print_update(&world);
-            // usleep(sleep_usec);
+            usleep(sleep_usec);
             changed = world_generate_step(&world);
-        } while (i--);
+        } while (changed);
     }
     else
     {
