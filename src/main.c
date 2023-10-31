@@ -88,15 +88,13 @@ int main(int argc, char **argv)
 
         useconds_t sleep_usec = 20 * 1000;
         bool changed;
+        int i = 0;
         do
         {
-            // move cursor to overwrite last printout
-            printf("\033[%dA", world.height); // move up
-            printf("\033[%dD", world.width);  // move left
-            world_print(&world);
-            usleep(sleep_usec);
+            world_print_update(&world);
+            // usleep(sleep_usec);
             changed = world_generate_step(&world);
-        } while (changed);
+        } while (i--);
     }
     else
     {
