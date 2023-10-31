@@ -16,11 +16,11 @@ int main(int argc, char **argv)
     int world_width = 100;
     int world_height = 25;
     bool interactive_mode = false;
+    unsigned int seed = time(NULL);
+    double delay_ms = 10.0;
 
     int next_option_i = 1;
     char *option = NULL;
-
-    unsigned int seed = time(NULL);
 
     if (argc > next_option_i)
     {
@@ -39,6 +39,16 @@ int main(int argc, char **argv)
         {
             interactive_mode = true;
             next_option_i++;
+        }
+    }
+
+    if (argc > next_option_i)
+    {
+        option = argv[next_option_i];
+        if (strcmp(option, "-d") == 0)
+        {
+            delay_ms = atof(argv[next_option_i + 1]);
+            next_option_i += 2;
         }
     }
 
@@ -76,8 +86,6 @@ int main(int argc, char **argv)
     struct world world;
     world_init(&world, seed, &variations, world_height, world_width);
 
-    // hide cursor
-    printf("\e[?25l");
     if (interactive_mode)
     {
         printf("world generation step by step:\n");
@@ -86,14 +94,11 @@ int main(int argc, char **argv)
         world_print(&world);
         world_generate_step(&world);
 
-        useconds_t sleep_usec = 20 * 1000;
+        useconds_t sleep_usec = (useconds_t)(delay_ms * 1000);
         bool changed;
         do
         {
-            // move cursor to overwrite last printout
-            printf("\033[%dA", world.height); // move up
-            printf("\033[%dD", world.width);  // move left
-            world_print(&world);
+            world_print_update(&world);
             usleep(sleep_usec);
             changed = world_generate_step(&world);
         } while (changed);
@@ -104,9 +109,6 @@ int main(int argc, char **argv)
         printf("world:\n");
         world_print(&world);
     }
-
-    // show cursor again
-    printf("\e[?25h");
 
     // clean up
     world_destroy(&world);

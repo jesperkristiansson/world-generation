@@ -11,6 +11,7 @@ struct world
 {
     struct tile *tiles;
     struct tile_bucket *buckets;
+    unsigned int *last_val; // keeps track of which tiles have changed, used to optimized which tiles are printed
     unsigned int height, width;
     unsigned int num_buckets;
 };
@@ -22,5 +23,6 @@ bool world_generate_step(struct world *world);
 struct tile *world_get_tile(struct world *world, unsigned int x, unsigned int y);
 void world_get_position(struct world *world, struct tile *tile, unsigned int *x, unsigned int *y);
 void world_print(struct world *world);
+void world_print_update(struct world *world); // world_print must have been called before and no additional print outs
 
 #endif
