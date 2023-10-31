@@ -134,6 +134,8 @@ void world_get_position(struct world *world, struct tile *tile, unsigned int *x,
 
 void world_print_update(struct world *world)
 {
+    // hide cursor
+    printf("\e[?25l");
     // move cursor to start of world
     printf("\033[%dA", world->height); // move up
     // printf("\033[%dD", world->width);  // move left
@@ -205,6 +207,10 @@ void world_print_update(struct world *world)
 
     // reset colors
     printf("\e[0m");
+
+    // show cursor again
+    printf("\e[?25h");
+
     fflush(stdout);
 }
 

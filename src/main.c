@@ -86,8 +86,6 @@ int main(int argc, char **argv)
     struct world world;
     world_init(&world, seed, &variations, world_height, world_width);
 
-    // hide cursor
-    printf("\e[?25l");
     if (interactive_mode)
     {
         printf("world generation step by step:\n");
@@ -111,9 +109,6 @@ int main(int argc, char **argv)
         printf("world:\n");
         world_print(&world);
     }
-
-    // show cursor again
-    printf("\e[?25h");
 
     // clean up
     world_destroy(&world);
